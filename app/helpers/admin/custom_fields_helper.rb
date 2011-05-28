@@ -33,6 +33,10 @@ module Admin::CustomFieldsHelper
     collection.map { |field| [field.label, field._name] }
   end
 
+  def options_for_date_slug_field(content_type, collection_name)
+    options_for_highlighted_field(content_type, collection_name) + %w(created_at updated_at).map{|f| [f, f]}
+  end
+
   def options_for_text_formatting
     options = %w(none html).map do |option|
       [t("admin.custom_fields.text_formatting.#{option}"), option]

@@ -73,10 +73,11 @@ module Locomotive
 
           attributes.each do |name, value|
             field = content_type.content_custom_fields.detect { |f| f._alias == name }
+            
+            settables = ['created_at', 'updated_at']
+            next if field.nil? and not settables.include?(name) # the attribute name is not related to a field (name misspelled ?)
 
-            next if field.nil? # the attribute name is not related to a field (name misspelled ?)
-
-            value = (case field.kind.downcase
+            value = (case field.try(:kind).try(:downcase)
             when 'file'     then self.open_sample_asset(value)
             when 'boolean'  then Boolean.set(value)
             when 'date'     then Date.parse(value)

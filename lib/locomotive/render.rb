@@ -34,17 +34,24 @@ module Locomotive
         path = 'index' if path.blank?
 
         if path != 'index'
-          dirname = File.dirname(path).gsub(/^\.$/, '') # also look for templatized page path
-          path = [path, File.join(dirname, 'content_type_template').gsub(/^\//, '')]
+          content_type_slug, *instance_path_paths = path.split('/')
+          content_instance_slug = instance_path_paths.join('/')
+          
+          path = [path, File.join(content_type_slug, 'content_type_template')]
         end
-
+        
+        Locomotive.logger "ROUTING FOR #{path.inspect}"
+        
         if page = current_site.pages.any_in(:fullpath => [*path]).first
           if not page.published? and current_admin.nil?
             page = nil
           else
             if page.templatized?
-              @content_instance = page.content_type.contents.where(:_slug => File.basename(path.first)).first
-
+              Locomotive.logger "PAGING FOR #{page.inspect}"
+              
+              @content_instance = page.content_type.contents.where(:_slug => content_instance_slug).first
+              Locomotive.logger "GOT INSTANCE: #{@content_instance.inspect}"
+              
               if @content_instance.nil? || (!@content_instance.visible? && current_admin.nil?) # content instance not found or not visible
                 page = nil
               end

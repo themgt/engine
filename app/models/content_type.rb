@@ -10,6 +10,7 @@ class ContentType
   field :order_direction, :default => 'asc'
   field :highlighted_field_name
   field :group_by_field_name
+  field :date_slug_field_name
   field :api_enabled, :type => Boolean, :default => false
   field :api_accounts, :type => Array
 

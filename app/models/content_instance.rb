@@ -56,7 +56,11 @@ class ContentInstance
 
   def set_slug
     _alias = self.highlighted_field_alias
-    self._slug = self.send(_alias).parameterize('_')
+    highlighted_field_slug = self.send(_alias).parameterize('_')
+    
+    self._slug = self.content_type.date_slug_field_name.present? ?
+      self.send(self.content_type.date_slug_field_name).to_s(:slug) + "/" + highlighted_field_slug :
+      highlighted_field_slug
   end
 
   def set_visibility
