@@ -1,41 +1,57 @@
 # encoding: utf-8
-
 class AssetUploader < CarrierWave::Uploader::Base
 
-  include Locomotive::CarrierWave::Uploader::Asset
-
+  include CarrierWave::RMagick
+  delegate :created_at, :updated_at, :image?, :sass?, :to => :model
+  
   def store_dir
     File.join(model.collection.site_id.to_s, model.collection.slug)
   end
-
+  
   def cache_dir
-    "#{Rails.root}/tmp/uploads"
+    File.join(Rails.root, "tmp/uploads")
   end
   
-  version :thumb, :if => :image? do
-    process :resize_to_fill => [50, 50]
-    process :convert => 'png'
+  def local_dir
+    File.join(Rails.root, "tmp/grifizoid", store_dir)
   end
-
-  version :medium, :if => :image? do
-    process :resize_to_fill => [80, 80]
-    process :convert => 'png'
+  
+  def current_path
+    ensure_local_file_exists
+    local_path
   end
-
-  version :preview, :if => :image? do
-    process :resize_to_fit => [880, 1100]
-    process :convert => 'png'
+  
+  # TODO: fix confusing naming - cache dir is class-wide, cache_path is for this specific instance
+  def local_path
+    File.join(local_dir, model.source_filename || original_filename)
+  end
+  
+  def ensure_local_file_exists
+    cache_file_locally unless local_cache_current?
+  end
+  
+  def local_cache_current?
+    File.exists?(local_path) and 
+      Digest::MD5.hexdigest(File.read(local_path)) == Digest::MD5.hexdigest(read)
+  end
+  
+  def cache_file_locally
+    FileUtils.mkdir_p(File.dirname(local_path))
+    
+    File.open(local_path, 'wb'){ |f| f << read }
   end
 
   process :set_content_type
   process :set_size
   process :set_width_and_height
-
+  #process :ensure_local_file_exists
+  process :compile_sass
+  
   def set_content_type(*args)
-    value = :other
+    value = 'other'
 
     content_type = file.content_type == 'application/octet-stream' ? File.mime_type?(original_filename) : file.content_type
-
+    
     self.class.content_types.each_pair do |type, rules|
       rules.each do |rule|
         case rule
@@ -44,7 +60,11 @@ class AssetUploader < CarrierWave::Uploader::Base
         end
       end
     end
-
+    
+    # try to extract something from the filename
+    value = (File.extname(original_filename).sub(/^\./, '').presence || 'other') if value == 'other'
+    
+    file.content_type = File.mime_type?(original_filename)
     model.content_type = value
   end
 
@@ -53,14 +73,17 @@ class AssetUploader < CarrierWave::Uploader::Base
   end
 
   def set_width_and_height
-    if model.image?
+    if image?
       magick = ::Magick::Image.read(current_path).first
       model.width, model.height = magick.columns, magick.rows
     end
   end
-
-  def image?
-    model.image?
+  
+  def compile_sass
+    if sass?
+      ensure_local_file_exists
+      model.collection.compile(model)
+    end
   end
 
   def self.content_types

@@ -32,6 +32,12 @@ Rails.application.routes.draw do
     resources :theme_assets do
       get :all, :action => 'index', :on => :collection, :defaults => { :all => true }
     end
+    
+    resources :asset_collections
+
+    resources :assets, :path => 'asset_collections/:collection_id/assets' do
+      post :import, :on => :collection
+    end
 
     resources :assets
 

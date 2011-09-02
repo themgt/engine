@@ -17,6 +17,7 @@ class Asset
 
   ## associations ##
   referenced_in :site
+  embedded_in :collection, :class_name => 'AssetCollection', :inverse_of => :assets
 
   ## validations ##
   validates_presence_of :source

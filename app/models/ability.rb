@@ -31,7 +31,7 @@ class Ability
     can :touch, [Page, ThemeAsset]
     can :sort, Page
 
-    can :manage, [ContentInstance, Asset]
+    can :manage, [ContentInstance, Asset, AssetCollection]
 
     can :touch, Site do |site|
       site == @site
@@ -50,6 +50,8 @@ class Ability
     can :manage, ThemeAsset
 
     can :manage, Asset
+    
+    can :manage, AssetCollection
 
     can :manage, Site do |site|
       site == @site

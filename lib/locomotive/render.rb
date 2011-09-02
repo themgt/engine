@@ -91,7 +91,7 @@ module Locomotive
           :site           => current_site,
           :page           => @page,
           :inline_editor  => self.editing_page?,
-          :current_admin  => current_admin
+          :current_admin  => current_admin,
         }
 
         ::Liquid::Context.new({}, assigns, registers)

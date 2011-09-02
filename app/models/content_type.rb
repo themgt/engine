@@ -87,16 +87,20 @@ class ContentType
       conditions_with_names = {}
 
       conditions.each do |key, value|
-        # convert alias (key) to name
-        field = self.content_custom_fields.detect { |f| f._alias == key }
-
-        case field.kind.to_sym
-        when :category
-          if (category_item = field.category_items.where(:name => value).first).present?
-            conditions_with_names[field._name.to_sym] = category_item._id
-          end
+        if key == '_slug'
+          conditions_with_names[:_slug] = value
         else
-          conditions_with_names[field._name.to_sym] = value
+          # convert alias (key) to name
+          field = self.content_custom_fields.detect { |f| f._alias == key }
+
+          case field.kind.to_sym
+          when :category
+            if (category_item = field.category_items.where(:name => value).first).present?
+              conditions_with_names[field._name.to_sym] = category_item._id
+            end
+          else
+            conditions_with_names[field._name.to_sym] = value
+          end
         end
       end
 

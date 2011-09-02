@@ -27,6 +27,10 @@ require 'RMagick'
 require 'cells'
 require 'sanitize'
 
+require 'rack/raw_upload'
+require 'compass/logger'
+require 'ninesixty'
+
 $:.unshift File.dirname(__FILE__)
 
 module Locomotive
@@ -36,6 +40,21 @@ module Locomotive
 
     initializer "locomotive.cells" do |app|
       Cell::Base.prepend_view_path("#{config.root}/app/cells")
+    end
+    
+    initializer "accepting HTML5 drag & drop uploads" do |app|
+      app.middleware.use Rack::RawUpload#, :paths => ['/admin/asset_collections.*']
+    end
+    
+    initializer "serving files from mongo gridfs" do |app|
+      require 'grifizoid'
+      
+      app.middleware.insert_after Rack::Runtime, Grifizoid do |req|
+        site      = Site.match_domain(req.host).first
+        # Rails.logger.info "[running subdomain GFS lookup]: #{site.to_param} | #{req.path_info}"
+
+        gfs_path  = File.join(site.to_param, req.path_info)
+      end
     end
 
     rake_tasks do
