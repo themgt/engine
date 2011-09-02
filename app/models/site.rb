@@ -31,7 +31,6 @@ class Site
   accepts_nested_attributes_for :memberships
 
   ## methods ##
-
   def all_pages_in_once
     Page.quick_tree(self)
   end

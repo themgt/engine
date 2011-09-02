@@ -66,5 +66,7 @@ Rails.application.routes.draw do
   # magic urls
   match '/' => 'admin/rendering#show'
   match '*path/edit' => 'admin/rendering#show', :defaults => { :editing => true }
+  
+  match '*path.atom' => 'pogodan#show_atom', :format => 'atom'
   match '*path' => 'admin/rendering#show'
 end

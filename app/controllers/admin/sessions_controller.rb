@@ -2,7 +2,8 @@ module Admin
   class SessionsController < Devise::SessionsController
 
     include Locomotive::Routing::SiteDispatcher
-
+    include Admin::AccountsHelper
+    
     layout '/admin/layouts/box'
 
     before_filter :require_site

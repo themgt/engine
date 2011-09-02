@@ -5,7 +5,7 @@ class ThemeAssetUploader < CarrierWave::Uploader::Base
   include Locomotive::CarrierWave::Uploader::Asset
 
   def store_dir
-    self.build_store_dir('sites', model.site_id, 'theme', model.folder)
+    File.join 'theme', (model.folder_was || model.folder)
   end
 
   def extension_white_list

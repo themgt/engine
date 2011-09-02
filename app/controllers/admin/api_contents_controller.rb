@@ -22,6 +22,7 @@ module Admin
             redirect_to params[:success_callback]
           end
         else
+          Locomotive.logger "[API create error]: " + @content.errors_to_hash.inspect
           format.json { render :json => { :content => @content, :errors => @content.errors } }
           format.html do
             flash[@content_type.slug.singularize] = @content.aliased_attributes
