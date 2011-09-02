@@ -3,16 +3,25 @@ class Membership
   include Locomotive::Mongoid::Document
 
   ## fields ##
-  field :admin, :type => Boolean, :default => false
+  field :role, :default => 'author'
 
   ## associations ##
-  referenced_in :account
+  referenced_in :account, :validate => false
   embedded_in :site, :inverse_of => :memberships
 
   ## validations ##
   validates_presence_of :account
 
+  ## callbacks ##
+  before_save :define_role
+
   ## methods ##
+
+  Ability::ROLES.each do |_role|
+    define_method("#{_role}?") do
+      self.role == _role
+    end
+  end
 
   def email; @email; end
 
@@ -27,13 +36,23 @@ class Membership
       :error
     elsif self.account.blank?
       :create_account
-    elsif self.site.memberships.find_all { |m| m.account_id == self.account_id }.size > 1
+    elsif self.site.memberships.any? { |m| m.account_id == self.account_id && m._id != self._id }
       self.errors.add(:base, 'Already created')
-      :nothing
+      :already_created
     else
       self.save
       :save_it
     end
+  end
+
+  def ability
+    @ability ||= Ability.new(self.account, self.site)
+  end
+
+  protected
+
+  def define_role
+    self.role = Ability::ROLES.include?(role.downcase) ? role.downcase : Ability::ROLES.first
   end
 
 end

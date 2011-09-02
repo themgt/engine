@@ -32,7 +32,7 @@ module Extensions
         end
 
         def editable_elements_grouped_by_blocks
-          all_enabled = self.editable_elements.reject { |el| el.disabled? }
+          all_enabled = self.editable_elements.by_priority.reject { |el| el.disabled? }
           groups = all_enabled.group_by(&:block)
           groups.delete_if { |block, elements| elements.empty? }
         end
@@ -67,10 +67,13 @@ module Extensions
 
             if existing_el.nil? # new one from parents
               new_attributes = el.attributes.merge(:from_parent => true)
+
               if new_attributes['default_attribute'].present?
                 new_attributes['default_content'] = self.send(new_attributes['default_attribute']) || el.content
               else
-                new_attributes['default_content'] = el.content
+                if el.respond_to?(:content) # only for text
+                  new_attributes['default_content'] = el.content
+                end
               end
 
               self.editable_elements.build(new_attributes, el.class)

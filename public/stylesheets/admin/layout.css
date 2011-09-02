@@ -80,9 +80,17 @@ body {
   border-bottom: 1px dotted #bbbbbd;
 }
 
+#content div.inner h2 a {
+  color: #1F82BC;
+  text-decoration: none;
+}
+
+#content div.inner h2 a:hover {
+  text-decoration: underline;
+}
+
 #content div.inner h2 a.editable {
   padding: 2px 25px 2px 6px;
-  text-decoration: none;
   color: #1e1f26;
   outline: none;
 }
@@ -90,6 +98,7 @@ body {
 #content div.inner h2 a.editable:hover {
   background: #fffbe5 url(/images/admin/form/pen.png) no-repeat right 5px;
   border-bottom: 1px dotted #efe4a5;
+  text-decoration: none;
 }
 
 #content div.inner h3 {
@@ -150,6 +159,33 @@ body {
 #content #local-actions-bar a.new em { background-position: 0 -48px; left: 13px; }
 
 #content #local-actions-bar a:hover { text-decoration: none; color: #333; }
+
+#content #local-actions-bottom-bar {
+  position: relative;
+  top: 27px;
+  left: -15px;
+  width: 950px;
+  background: #8b8d9a;
+}
+
+#content #local-actions-bottom-bar p {
+  padding: 15px;
+  margin: 0px;
+}
+
+#content #local-actions-bottom-bar a {
+  color: #fff !important;
+  text-decoration: none;
+  font-size: 0.8em;
+  position: relative;
+  top: 4px;
+}
+
+#content #local-actions-bottom-bar a.remove { color: #ff092c !important; }
+
+#content #local-actions-bottom-bar p a:hover { text-decoration: underline; }
+
+#content #local-actions-bottom-bar .last p { text-align: right; }
 
 /* ___ footer ___ */
 

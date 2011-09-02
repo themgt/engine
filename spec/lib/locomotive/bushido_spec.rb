@@ -62,11 +62,28 @@ describe 'Bushido support' do
       Locomotive.bushido?.should be_true
     end
 
+    describe 'events' do
+
+      before(:each) do
+        configure_locomotive_with_bushido
+        @site = FactoryGirl.build('test site')
+        @account = @site.memberships.first.account
+        Account.stubs(:first).returns(@account)
+      end
+
+      it 'responds to the app.claimed event' do
+        ::Bushido::Data.call('app.claimed')
+        @account.name.should == 'san_francisco'
+        @account.email.should == 'san_francisco@bushi.do'
+      end
+
+    end
+
     context 'enhancing site' do
 
       before(:each) do
         configure_locomotive_with_bushido
-        (@site = Factory.build(:site)).stubs(:valid?).returns(true)
+        @site = FactoryGirl.build('valid site')
       end
 
       it 'calls add_bushido_domains after saving a site' do
@@ -166,7 +183,6 @@ describe 'Bushido support' do
   end
 
   after(:all) do
-    ENV['APP_TLD'] = nil
     Locomotive.configure_for_test(true)
   end
 

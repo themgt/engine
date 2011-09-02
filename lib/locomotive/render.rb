@@ -9,7 +9,7 @@ module Locomotive
 
       def render_locomotive_page
         if request.fullpath =~ /^\/admin\//
-          render :template => "/admin/errors/404", :layout => '/admin/layouts/box', :status => :not_found
+          render :template => '/admin/errors/404', :layout => '/admin/layouts/box', :status => :not_found
         else
           @page = locomotive_page
 
@@ -24,13 +24,15 @@ module Locomotive
       end
 
       def render_no_page_error
-        render :template => "/admin/errors/no_page", :layout => false
+        render :template => '/admin/errors/no_page', :layout => false
       end
 
       def locomotive_page
         path = (params[:path] || request.fullpath).clone # TODO: params[:path] is more consistent
-        path.gsub!(/\.[a-zA-Z][a-zA-Z0-9]{2,}$/, '')
-        path.gsub!(/^\//, '')
+        path = path.split('?').first # take everything before the query string or the lookup fails
+        path.gsub!(/\.[a-zA-Z][a-zA-Z0-9]{2,}$/, '') # remove the page extension
+        path.gsub!(/^\//, '') # remove the leading slash
+
         path = 'index' if path.blank?
 
         if path != 'index'
@@ -66,11 +68,18 @@ module Locomotive
         assigns = {
           'site'              => current_site,
           'page'              => @page,
-          'asset_collections' => Locomotive::Liquid::Drops::AssetCollections.new,
+          'asset_collections' => Locomotive::Liquid::Drops::AssetCollections.new, # depracated, will be removed shortly
           'contents'          => Locomotive::Liquid::Drops::Contents.new,
           'current_page'      => self.params[:page],
-          'params'            => self.params
-        }.merge(flash.stringify_keys) # data from api
+          'params'            => self.params,
+          'url'               => request.url,
+          'now'               => Time.now.utc,
+          'today'             => Date.today
+        }
+
+        assigns.merge!(Locomotive.config.context_assign_extensions)
+
+        assigns.merge!(flash.stringify_keys) # data from api
 
         if @page.templatized? # add instance from content type
           assigns['content_instance'] = @content_instance
@@ -101,7 +110,7 @@ module Locomotive
           end
         end
 
-        render :text => output, :layout => false, :status => page_status
+        render :text => output, :layout => false, :status => page_status unless performed?
       end
 
       def not_found_page
@@ -113,7 +122,7 @@ module Locomotive
       end
 
       def page_status
-        @page == not_found_page ? :not_found : :ok
+        @page.not_found? ? :not_found : :ok
       end
 
     end

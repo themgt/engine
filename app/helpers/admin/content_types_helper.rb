@@ -7,7 +7,7 @@ module Admin::ContentTypesHelper
 
     @content_types = current_site.content_types.ordered.
       limit(:contents => Locomotive.config.lastest_items_nb).
-      only(:name, :slug, :highlighted_field_name, :content_custom_fields_version).to_a
+      only(:site_id, :name, :slug, :highlighted_field_name, :content_custom_fields_version, :order_by, :serialized_item_template, :raw_item_template).to_a
 
     if @content_type && @content_type.persisted? && @content_types.index(@content_type) >= MAX_DISPLAYED_CONTENTS
       @content_types.delete(@content_type)
@@ -45,7 +45,7 @@ module Admin::ContentTypesHelper
       url = admin_contents_url(content_type.slug)
       css = @content_type && content_type.slug == @content_type.slug ? 'on' : ''
 
-      html = admin_submenu_item(label, url, :i18n => false, :css => css) do
+      html = admin_content_menu_item(label, url, :i18n => false, :css => css) do
         yield(content_type)
       end
 
@@ -59,11 +59,30 @@ module Admin::ContentTypesHelper
     if types.size > MAX_DISPLAYED_CONTENTS
       sliced = types[MAX_DISPLAYED_CONTENTS, types.size - MAX_DISPLAYED_CONTENTS]
 
-      html = admin_submenu_item('...', '#', :i18n => false) do
+      html = admin_content_menu_item('...', '#', :i18n => false) do
         yield(sliced)
       end
 
       haml_concat(html)
+    end
+  end
+
+  def content_label_for(content)
+    if content._parent.raw_item_template.blank?
+      content._label # default one
+    else
+      assigns = {
+        'site'              => current_site,
+        'content'           => content.to_liquid
+      }
+
+      registers = {
+        :controller     => self,
+        :site           => current_site,
+        :current_admin  => current_admin
+      }
+
+      preserve(content._parent.item_template.render(::Liquid::Context.new({}, assigns, registers)))
     end
   end
 

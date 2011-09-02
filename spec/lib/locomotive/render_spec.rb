@@ -1,14 +1,29 @@
 require 'spec_helper'
+require 'ostruct'
 
 describe 'Locomotive rendering system' do
 
   before(:each) do
     @controller = Locomotive::TestController.new
     Site.any_instance.stubs(:create_default_pages!).returns(true)
-    @site = Factory.build(:site)
+    @site = FactoryGirl.build(:site)
     Site.stubs(:find).returns(@site)
     @controller.current_site = @site
-    @page = Factory.build(:page, :site => nil, :published => true)
+    @page = FactoryGirl.build(:page, :site => nil, :published => true)
+  end
+
+  context '#liquid_context' do
+
+    it 'includes the current date and time' do
+      @controller.instance_variable_set(:@page, @page)
+      @controller.stubs(:flash).returns({})
+      @controller.stubs(:params).returns({})
+      @controller.stubs(:request).returns(OpenStruct.new(:url => '/'))
+      context = @controller.send(:locomotive_context)
+      context['now'].should_not be_blank
+      context['today'].should_not be_blank
+    end
+
   end
 
   context 'setting the response' do
@@ -51,7 +66,7 @@ describe 'Locomotive rendering system' do
     end
 
     it 'sets the status to 404 not found when no page is found' do
-      @controller.expects(:not_found_page).returns(@page)
+      @page.stubs(:not_found?).returns(true)
       @controller.send(:prepare_and_set_response, 'Hello world !')
       @controller.status.should == :not_found
     end
@@ -78,6 +93,12 @@ describe 'Locomotive rendering system' do
       @controller.send(:locomotive_page).should_not be_nil
     end
 
+    it 'does not include the query string' do
+      @controller.request.fullpath = '/about_us/team.html?some=params&we=use'
+      @controller.current_site.pages.expects(:any_in).with({ :fullpath => %w{about_us/team about_us/content_type_template} }).returns([@page])
+      @controller.send(:locomotive_page).should_not be_nil
+    end
+
     it 'should return the 404 page if the page does not exist' do
       @controller.request.fullpath = '/contact'
       (klass = Page).expects(:published).returns([true])
@@ -85,7 +106,7 @@ describe 'Locomotive rendering system' do
       @controller.send(:locomotive_page).should be_true
     end
 
-    context 'redirect page' do
+    context 'redirect' do
 
       before(:each) do
         @page.redirect = true
@@ -104,7 +125,7 @@ describe 'Locomotive rendering system' do
     context 'templatized page' do
 
       before(:each) do
-        @content_type = Factory.build(:content_type, :site => nil)
+        @content_type = FactoryGirl.build(:content_type, :site => nil)
         @content = @content_type.contents.build(:_visible => true)
         @page.templatized = true
         @page.content_type = @content_type
@@ -160,6 +181,11 @@ describe 'Locomotive rendering system' do
 
     end
 
+  end
+
+  after(:all) do
+    ENV['APP_TLD'] = nil
+    Locomotive.configure_for_test(true)
   end
 
 end

@@ -9,9 +9,9 @@ module Locomotive
 
         self.add_page('index')
 
-        Dir[File.join(theme_path, 'templates', '**/*')].each do |template_path|
+        Dir[File.join(theme_path, 'app', 'views', 'pages', '**/*')].each do |template_path|
 
-          fullpath = template_path.gsub(File.join(theme_path, 'templates'), '').gsub('.liquid', '').gsub(/^\//, '')
+          fullpath = template_path.gsub(File.join(theme_path, 'app', 'views', 'pages'), '').gsub('.liquid', '').gsub(/^\//, '')
 
           next if %w(index 404).include?(fullpath)
 
@@ -37,7 +37,7 @@ module Locomotive
 
         return page if page # already added, so skip it
 
-        template = File.read(File.join(theme_path, 'templates', "#{fullpath}.liquid")) rescue "Unable to find #{fullpath}.liquid"
+        template = File.read(File.join(theme_path, 'app', 'views', 'pages', "#{fullpath}.liquid")) rescue "Unable to find #{fullpath}.liquid"
 
         self.replace_images!(template)
 
@@ -74,11 +74,18 @@ module Locomotive
         # redirection page ?
         attributes[:redirect] = true if attributes[:redirect_url].present?
 
+        # Don't want the editable elements to be imported: they will be regenerated
+        editable_elements_attributes = attributes.delete(:editable_elements)
+
         page = site.pages.where(:fullpath => self.sanitize_fullpath(fullpath)).first || site.pages.build
 
         page.attributes = attributes
 
         page.save!
+
+        unless editable_elements_attributes.nil?
+          self.assign_editable_elements(page, editable_elements_attributes)
+        end
 
         self.log "adding #{page.fullpath} (#{template.blank? ? 'without' : 'with'} template) / #{page.position}"
 
@@ -87,6 +94,30 @@ module Locomotive
         context[:done][fullpath] = page
 
         page
+      end
+
+      def assign_editable_elements(page, elements)
+        page.reload # editable elements are not synchronized otherwise
+
+        elements.each do |attributes|
+          element = page.find_editable_element(attributes['block'], attributes['slug'])
+
+          next if element.nil?
+
+          if element.respond_to?(:source)
+            unless attributes['content'].blank?
+              asset_path = File.join(theme_path, 'public', attributes['content'])
+
+              if File.exists?(asset_path)
+                element.source = File.open(asset_path)
+              end
+            end
+          else
+            element.content = attributes['content']
+          end
+        end
+
+        page.save!
       end
 
       def build_parent_template(template)
@@ -120,11 +151,9 @@ module Locomotive
         return if template.blank?
 
         template.gsub!(/\/samples\/(.*\.[a-zA-Z0-9]{3})/) do |match|
-          name = $1
+          name = File.basename($1)
 
-          collection = AssetCollection.find_or_create_internal(site)
-
-          if asset = collection.assets.detect { |a| a.source_filename == name }
+          if asset = site.assets.where(:source_filename => name).first
             asset.source.url
           else
             match
@@ -146,8 +175,6 @@ module Locomotive
             fullpath = data.keys.first.to_s
 
             unless %w(index 404).include?(fullpath)
-            #   position = fullpath == 'index' ? 0 : 1
-            # else
               (segments = fullpath.split('/')).pop
               position_key = segments.empty? ? 'index' : segments.join('/')
 

@@ -4,18 +4,18 @@
   color: #222;
 }
 
-#panel .inner p.explanations {
-  margin-top: 10px;
-  font-size: 1.2em;
-}
-
-#panel .inner p.explanations a {
+#panel .inner a {
   color: #1F82BC;
   text-decoration: none;
 }
 
-#panel .inner p.explanations a:hover {
+#panel .inner a:hover {
   text-decoration: underline;
+}
+
+#panel .inner p.explanations {
+  margin-top: 10px;
+  font-size: 1.2em;
 }
 
 #panel .inner p.done {
@@ -45,6 +45,37 @@
 }
 
 #panel .inner dd p {
-
 }
+
+/* ___ custom ___ */
+
+#panel fieldset ol li.question input[type=checkbox] {
+  display: inline;
+  width: auto;
+  margin-right: 10px;
+}
+
+#panel fieldset ol li.question label {
+  display: inline;
+  font-weight: normal;
+}
+
+#panel fieldset ol li div.inline-errors {
+  background: transparent url(/images/admin/form/error-arrow.png) no-repeat 17px 0;
+  margin: 2px 0 0 0;
+  padding: 8px 0 0 0;
+}
+
+#panel fieldset ol li div.inline-errors p {
+  display: inline-block;
+  width: auto;
+  margin: 0px;
+  padding: 3px 12px 4px 30px;
+  color: #fff !important;
+  text-shadow: #000 0px 1px;
+  font-size: 0.9em;
+  padding-left: 30px;
+  background: #cd0f19 url(/images/admin/form/icons/error.png) no-repeat 10px 6px;
+}
+
 

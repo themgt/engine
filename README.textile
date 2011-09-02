@@ -19,8 +19,8 @@ h2. Gems
 
 Here is a short list of main gems used in the application.
 
-* Rails 3.0.5
-* Mongoid 2.0.0.rc.7 (with MongoDB 1.6)
+* Rails 3.0.10
+* Mongoid 2.0.2 (with MongoDB 1.8)
 * Liquid
 * Devise
 * Carrierwave
@@ -34,9 +34,14 @@ See the "official website":http://www.locomotivecms.com
 
 h2. Team
 
-* Developers: "Didier Lafforgue":http://www.nocoffee.fr, "Jacques Crocker":http://www.railsjedi.com
-* Contributors: "Dirk Kelly":http://www.dirkkelly.com, "Mario Visic":http://www.mariovisic.com, "Raphael Costa":http://raphaelcosta.net (Brazilian Portuguese translation), "Bernd Hauser":http://www.designhunger.de (German translation), "Andrea Frigido":http://www.frisoft.it (Italian translation)
+* Developers: "Didier Lafforgue":http://www.nocoffee.fr, "Jacques Crocker":http://www.railsjedi.com, "Mario Visic":http://www.mariovisic.com
+* Contributors: "Dirk Kelly":http://www.dirkkelly.com, "Raphael Costa":http://raphaelcosta.net (Brazilian Portuguese translation), "Bernd Hauser":http://www.designhunger.de (German translation), "Andrea Frigido":http://www.frisoft.it (Italian translation), "Enrique García":https://github.com/kikito (Spanish translation), "Lars Smit":https://github.com/larssmit (Dutch translation), "PitOn":https://github.com/GarPit (Russian translation)
 * UI Designer: "Sacha Greif":http://www.sachagreif.com
+* IE maintainer: "Alex Sanford":https://github.com/alexsanford
+
+h2. Support
+
+Bernd Hauser from "designhunger":http://www.designhunger.de funded the following feature: *has_one* / *has_many* between content types.
 
 h2. Credits
 
@@ -49,3 +54,4 @@ h2. Contact
 Feel free to contact me at didier at nocoffee dot fr.
 
 Copyright (c) 2011 NoCoffee, released under the MIT license
+...

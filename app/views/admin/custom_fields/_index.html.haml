@@ -21,11 +21,17 @@
 
       %input{ :name => '{{base_name}}[hint]', :value => '{{{hint}}}', :type => 'hidden', :'data-field' => 'hint' }
 
+      %input{ :name => '{{base_name}}[text_formatting]', :value => '{{{text_formatting}}}', :type => 'hidden', :'data-field' => 'text_formatting' }
+
+      %input{ :name => '{{base_name}}[target]', :value => '{{{target}}}', :type => 'hidden', :'data-field' => 'target' }
+
+      %input{ :name => '{{base_name}}[reverse_lookup]', :value => '{{{reverse_lookup}}}', :type => 'hidden', :'data-field' => 'reverse_lookup' }
+
       %input{ :name => '{{base_name}}[label]', :value => '{{{label}}}', :type => 'text', :'data-field' => 'label' }
 
       &mdash;
 
-      %em {{kind_name}}
+      %em.editable {{kind_name}}
 
       = select_tag '{{base_name}}[kind]', options_for_select(options_for_field_kind), :'data-field' => 'kind'
 

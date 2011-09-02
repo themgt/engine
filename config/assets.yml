@@ -1,4 +1,6 @@
 embed_assets: off
+# compress_assets: off
+# package_assets: off
 
 s3_bucket: <%= ENV['S3_BUCKET'] %>
 s3_access_key_id: <%= ENV['S3_KEY_ID'] %>
@@ -7,6 +9,9 @@ s3_secret_access_key: <%= ENV['S3_SECRET_KEY'] %>
 javascripts:
   box:
     - public/javascripts/admin/jquery.js
+  installation:
+    - public/javascripts/admin/jquery.js
+    - public/javascripts/admin/installation.js
   common:
     - public/javascripts/admin/jquery.js
     - public/javascripts/admin/jquery.ui.js
@@ -18,12 +23,13 @@ javascripts:
     - public/javascripts/admin/plugins/toggle.js
     - public/javascripts/admin/plugins/growl.js
     - public/javascripts/admin/plugins/cookie.js
-    - public/javascripts/admin/plugins/selectmenu.js
     - public/javascripts/admin/locales/datepicker_de.js
     - public/javascripts/admin/locales/datepicker_fr.js
     - public/javascripts/admin/locales/datepicker_pt-BR.js
     - public/javascripts/admin/locales/datepicker_it.js
     - public/javascripts/admin/application.js
+    - public/javascripts/admin/guiders-1.1.0.js
+    - public/javascripts/admin/tutorial.js
   custom_fields:
     - public/javascripts/admin/plugins/fancybox.js
     - public/javascripts/admin/plugins/mustache.js
@@ -34,20 +40,16 @@ javascripts:
     - public/javascripts/admin/plugins/fancybox.js
     - public/javascripts/admin/plugins/mustache.js
     - public/javascripts/admin/custom_fields/category.js
-  asset_collections:
-    - public/javascripts/admin/plugins/fancybox.js
-    - public/javascripts/admin/plugins/mustache.js
-    - public/javascripts/admin/custom_fields.js
-    - public/javascripts/admin/asset_collections.js
-  assets:
-    - public/javascripts/admin/assets.js
+    - public/javascripts/admin/custom_fields/has_many.js
   contents:
     - public/javascripts/admin/plugins/tiny_mce/tinymce.js
     - public/javascripts/admin/contents.js
   content_types:
+    - public/javascripts/admin/plugins/codemirror/codemirror.min.js
     - public/javascripts/admin/content_types.js
   site:
     - public/javascripts/admin/site.js
+    - public/javascripts/admin/plugins/codemirror/codemirror.min.js
   import:
     - public/javascripts/admin/plugins/json2.js
     - public/javascripts/admin/plugins/smartupdater.js
@@ -56,6 +58,7 @@ javascripts:
     - public/javascripts/admin/account.js
   pages:
     - public/javascripts/admin/pages.js
+    - public/javascripts/admin/plugins/menu_toggler.js
   edit_page:
     - public/javascripts/admin/plugins/tiny_mce/tinymce.js
     - public/javascripts/admin/editable_elements.js
@@ -84,14 +87,15 @@ stylesheets:
     - public/stylesheets/admin/layout.css
     - public/stylesheets/admin/jquery/ui.css
     - public/stylesheets/admin/plugins/toggle.css
-    - public/stylesheets/admin/plugins/selectmenu.css
     - public/stylesheets/admin/menu.css
     - public/stylesheets/admin/buttons.css
     - public/stylesheets/admin/formtastic.css
     - public/stylesheets/admin/formtastic_changes.css
     - public/stylesheets/admin/assets.css
+    - public/stylesheets/admin/sites_picker.css
     - public/stylesheets/admin/application.css
     - public/stylesheets/admin/safari.css
+    - public/stylesheets/admin/guiders-1.1.0.css
   fancybox:
     - public/stylesheets/admin/plugins/fancybox.css
     - public/stylesheets/admin/fancybox_changes.css

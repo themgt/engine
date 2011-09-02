@@ -1,13 +1,18 @@
-- title t('.title', :type => @content_type.name.capitalize)
-  
+- if breadcrumb_root
+  - title t('.title.breadcrumb', :root => link_to(breadcrumb_root._label, breadcrumb_url), :type => @content_type.name.capitalize)
+- else
+  - title t('.title.default', :type => @content_type.name.capitalize)
+
 - content_for :submenu do
   = render 'admin/shared/menu/contents'
-  
+
 - content_for :actions do
   = render 'admin/shared/actions/contents'
 
 - content_for :buttons do
-  = admin_button_tag t('admin.contents.index.edit'), edit_admin_content_type_url(@content_type), :class => 'edit'
+  - if can?(:manage, ContentType)
+    = admin_button_tag t('admin.contents.index.edit'), edit_admin_content_type_url(@content_type), :class => 'edit'
+
   = admin_button_tag t('admin.contents.index.new'), new_admin_content_url(@content_type.slug), :class => 'new'
 
 %p= @content_type.description
@@ -16,4 +21,4 @@
 
   = render 'form', :f => form
 
-  = render 'admin/shared/form_actions', :back_url => admin_contents_url(@content_type.slug), :button_label => :update
+  = render 'admin/shared/form_actions', :back_url => back_url, :button_label => :update

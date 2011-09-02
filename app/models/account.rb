@@ -4,14 +4,11 @@ class Account
 
   include Locomotive::Mongoid::Document
 
-  # devise modules
-  devise :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable
-
-  # attr_accessible :email, :password, :password_confirmation # TODO
+  devise *Locomotive.config.devise_modules
 
   ## attributes ##
   field :name
-  field :locale, :default => 'en'
+  field :locale, :default => Locomotive.config.default_locale.to_s or 'en'
   field :switch_site_token
 
   ## validations ##

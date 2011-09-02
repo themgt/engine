@@ -8,12 +8,12 @@
       .container
         #header
           = render 'admin/shared/header'
-          = render 'admin/shared/menu'
+          = render_cell 'admin/main_menu', :show
 
           #submenu
             %ul
               = yield :submenu
-              
+
             - if content_for? :actions
               .action
                 = yield :actions

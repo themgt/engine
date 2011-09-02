@@ -2,6 +2,9 @@ class ContentType
 
   include Locomotive::Mongoid::Document
 
+  ## extensions ##
+  include Extensions::ContentType::ItemTemplate
+
   ## fields ##
   field :name
   field :description
@@ -71,6 +74,10 @@ class ContentType
     end
   end
 
+  def latest_updated_contents
+    self.contents.latest_updated.reject { |c| !c.persisted? }
+  end
+
   def ordered_contents(conditions = {})
     column = self.order_by.to_sym
 
@@ -101,8 +108,8 @@ class ContentType
     self.asc_order? ? list : list.reverse
   end
 
-  def sort_contents!(order)
-    order.split(',').each_with_index do |id, position|
+  def sort_contents!(ids)
+    ids.each_with_index do |id, position|
       self.contents.find(BSON::ObjectId(id))._position_in_list = position
     end
     self.save
@@ -125,7 +132,7 @@ class ContentType
 
   def normalize_slug
     self.slug = self.name.clone if self.slug.blank? && self.name.present?
-    self.slug.slugify! if self.slug.present?
+    self.slug.permalink! if self.slug.present?
   end
 
   def remove_uploaded_files # callbacks are not called on each content so we do it manually

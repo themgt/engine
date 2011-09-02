@@ -3,3 +3,10 @@
   = include_stylesheets :fancybox
 
 = render 'admin/custom_fields/custom_form', :form => f, :title => :attributes, :parent => @content_type
+
+= f.foldable_inputs :name => :advanced_options do
+
+  = f.input :_slug
+  = f.input :seo_title
+  = f.input :meta_keywords
+  = f.input :meta_description

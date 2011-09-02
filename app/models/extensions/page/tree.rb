@@ -10,6 +10,10 @@ module Extensions
         ## fields ##
         field :position, :type => Integer
 
+        ## indexes ##
+        index :position
+        index [[:depth, :asc], [:position, :asc]]
+
         ## behaviours ##
         acts_as_tree :order => ['position', 'asc']
 
@@ -28,9 +32,9 @@ module Extensions
 
       module ClassMethods
 
-        # Warning: used only in read-only
-        def quick_tree(site)
-          pages = site.pages.minimal_attributes.order_by([[:depth, :asc], [:position, :asc]]).to_a
+        # Warning: should be used only in read-only
+        def quick_tree(site, minimal_attributes = true)
+          pages = (minimal_attributes ? site.pages.minimal_attributes : site.pages).order_by([[:depth, :asc], [:position, :asc]]).to_a
 
           tmp = []
 

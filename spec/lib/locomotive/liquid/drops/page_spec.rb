@@ -3,7 +3,8 @@ require 'spec_helper'
 describe Locomotive::Liquid::Drops::Page do
 
   before(:each) do
-    @home = Factory.build(:page)
+    site = FactoryGirl.build(:site)
+    @home = FactoryGirl.build(:page, :site => site, :meta_keywords => 'Libidinous, Angsty', :meta_description => "Quite the combination.")
   end
 
   context '#rendering tree' do
@@ -40,6 +41,29 @@ describe Locomotive::Liquid::Drops::Page do
 
   end
 
+  context '#parent' do
+    before(:each) do
+      @sub_page = FactoryGirl.build(:sub_page, :meta_keywords => 'Sub Libidinous, Angsty', :meta_description => "Sub Quite the combination.")
+    end
+
+    it 'renders title of parent page' do
+      content = render_template '{{ sub_page.parent.title }}', {'sub_page' => @sub_page}
+      content.should == "Home page"
+    end
+
+  end
+
+  context '#breadcrumbs' do
+    before(:each) do
+      @sub_page = FactoryGirl.build(:sub_page, :meta_keywords => 'Sub Libidinous, Angsty', :meta_description => "Sub Quite the combination.")
+    end
+
+    it 'renders breadcrumbs of current page' do
+      content = render_template '{% for crumb in sub_page.breadcrumbs %}{{ crumb.title}},{% endfor %}', {'sub_page' => @sub_page}
+      content.should == 'Home page,Subpage,'
+    end
+  end
+
   context '#rendering page title' do
 
     it 'renders the title of a normal page' do
@@ -47,13 +71,23 @@ describe Locomotive::Liquid::Drops::Page do
     end
 
     it 'renders the content instance highlighted field instead for a templatized page' do
-      templatized = Factory.build(:page, :title => 'Lorem ipsum template', :templatized => true)
+      templatized = FactoryGirl.build(:page, :title => 'Lorem ipsum template', :templatized => true)
 
       content_instance = Locomotive::Liquid::Drops::Content.new(mock('content_instance', :highlighted_field_value => 'Locomotive rocks !'))
 
       render_template('{{ page.title }}', 'page' => templatized, 'content_instance' => content_instance).should == 'Locomotive rocks !'
     end
 
+  end
+
+  describe 'meta_keywords' do
+    subject { render_template('{{ home.meta_keywords }}') }
+    it { should == @home.meta_keywords }
+  end
+
+  describe 'meta_description' do
+    subject { render_template('{{ home.meta_description }}') }
+    it { should == @home.meta_description }
   end
 
   def render_template(template = '', assigns = {})

@@ -9,21 +9,7 @@ module Admin::BaseHelper
     end
   end
 
-  def admin_menu_item(name, url)
-    index = controller.instance_variable_get(:@menu_index) || 1
-    controller.instance_variable_set(:@menu_index, index + 1)
-    label = content_tag(:em, escape_once('&nbsp;')) + content_tag(:span, t("admin.shared.menu.#{name}"))
-    content_tag(:li, content_tag(:span) + link_to(label, url), :class => "item #{'first' if index == 1} item-#{index} #{name.dasherize}")
-  end
-
-  def admin_button_tag(text, url, options = {})
-    text = text.is_a?(Symbol) ? t(".#{text}") : text
-    link_to(url, options) do
-      content_tag(:em, escape_once('&nbsp;')) + text
-    end
-  end
-
-  def admin_submenu_item(name, url, options = {}, &block)
+  def admin_content_menu_item(name, url, options = {}, &block)
     default_options = { :i18n => true, :css => name.dasherize.downcase }
     default_options.merge!(options)
 
@@ -39,10 +25,21 @@ module Admin::BaseHelper
     end
   end
 
+  def admin_button_tag(text, url, options = {})
+    text = text.is_a?(Symbol) ? t(".#{text}") : text
+    link_to(url, options) do
+      content_tag(:em, escape_once('&nbsp;')) + text
+    end
+  end
+
+  def admin_item_toggler(object)
+    image_tag("admin/list/icons/node_#{(cookies["folder-#{object._id}"] != 'none') ? 'open' : 'closed'}.png", :class => 'toggler')
+  end
+
   def collection_to_js(collection, options = {})
     js = collection.collect { |object| object.to_json }
 
-    options_to_js = options.to_json.gsub(/^\{/, '').gsub(/\}$/, '')
+    options_to_js = ActiveSupport::JSON.encode(options).gsub(/^\{/, '').gsub(/\}$/, '')
 
     "new Object({ \"collection\": [#{js.join(', ')}], #{options_to_js} })"
   end

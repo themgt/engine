@@ -6,6 +6,7 @@ tmp/**/*
 rerun.txt
 uploads
 spec/tmp
+spec/fixtures/themes/default
 public/assets
 public/sites
 public/uploads
@@ -30,3 +31,8 @@ config/deploy.rb
 perf/*.rb
 gem_graph.png
 sites/
+permanent
+doc/bushido
+*.swp
+
+

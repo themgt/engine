@@ -2,7 +2,7 @@
 
 # helps create a simple content page (parent: "index") with a slug, contents, and template
 def create_content_page(page_slug, page_contents, template = nil)
-  @home = @site.pages.where(:slug => "index").first || Factory(:page)
+  @home = @site.pages.where(:slug => "index").first || FactoryGirl.create(:page)
   page = @site.pages.create(:slug => page_slug, :body => page_contents, :parent => @home, :title => "some title", :published => true, :raw_template => template)
   page.should be_valid
   page
@@ -33,13 +33,20 @@ end
 Then /^I should have "(.*)" in the (.*) page$/ do |content, page_slug|
   page = @site.pages.where(:slug => page_slug).first
   raise "Could not find page: #{page_slug}" unless page
-
   page.raw_template.should == content
 end
 
 # checks if the rendered body matches a string
 Then /^the rendered output should look like:$/ do |body_contents|
-  page.body.should == body_contents
+  page.source.should == body_contents
+end
+
+Then /^I should see delete page buttons$/ do
+  page.has_css?("ul#pages-list li .more a.remove").should be_true
+end
+
+Then /^I should not see delete page buttons$/ do
+  page.has_css?("ul#pages-list li .more a.remove").should be_false
 end
 
 

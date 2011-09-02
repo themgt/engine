@@ -1,10 +1,12 @@
+# encoding: utf-8
+
 require 'spec_helper'
 
 describe ContentInstance do
 
   before(:each) do
     Site.any_instance.stubs(:create_default_pages!).returns(true)
-    @content_type = Factory.build(:content_type)
+    @content_type = FactoryGirl.build(:content_type)
     @content_type.content_custom_fields.build :label => 'Title', :kind => 'String'
     @content_type.content_custom_fields.build :label => 'Description', :kind => 'Text'
     @content_type.content_custom_fields.build :label => 'Visible ?', :kind => 'Text', :_alias => 'visible'
@@ -17,12 +19,58 @@ describe ContentInstance do
       build_content.should be_valid
     end
 
-    # Validations ##
+    ## Validations ##
 
-    it 'requires presence of title' do
+    it 'requires the presence of title' do
       content = build_content :title => nil
       content.should_not be_valid
       content.errors[:title].should == ["can't be blank"]
+    end
+
+    it 'requires the presence of the permalink (_slug)' do
+      content = build_content :title => nil
+      content.should_not be_valid
+      content.errors[:_slug].should == ["can't be blank"]
+    end
+
+    it 'has an unique permalink' do
+      build_content.save; @content_type = ContentType.find(@content_type._id)
+      content = build_content
+      content.should_not be_valid
+      content.errors[:_slug].should == ["is already taken"]
+    end
+
+  end
+
+  describe '#permalink' do
+
+    before(:each) do
+      @content = build_content
+    end
+
+    it 'has a default value based on the highlighted field' do
+      @content.send(:set_slug)
+      @content._permalink.should == 'locomotive'
+    end
+
+    it 'is empty if no value for the highlighted field is provided' do
+      @content.title = nil; @content.send(:set_slug)
+      @content._permalink.should be_nil
+    end
+
+    it 'includes dashes instead of white spaces' do
+      @content.title = 'my content instance'; @content.send(:set_slug)
+      @content._permalink.should == 'my-content-instance'
+    end
+
+    it 'removes accentued characters' do
+      @content.title = "une chèvre dans le pré"; @content.send(:set_slug)
+      @content._permalink.should == 'une-chevre-dans-le-pre'
+    end
+
+    it 'removes dots' do
+      @content.title = "my.test"; @content.send(:set_slug)
+      @content._permalink.should == 'my-test'
     end
 
   end
@@ -63,8 +111,8 @@ describe ContentInstance do
   describe '#api' do
 
     before(:each) do
-      @account_1 = Factory.build('admin user', :id => fake_bson_id('1'))
-      @account_2 = Factory.build('frenchy user', :id => fake_bson_id('2'))
+      @account_1 = FactoryGirl.build('admin user', :id => fake_bson_id('1'))
+      @account_2 = FactoryGirl.build('frenchy user', :id => fake_bson_id('2'))
 
       @content_type.api_enabled = true
       @content_type.api_accounts = ['', @account_1.id, @account_2.id]
@@ -94,6 +142,18 @@ describe ContentInstance do
 
   end
 
+  describe '#site' do
+    it 'delegates to the content type' do
+      @content_type.expects(:site)
+      build_content.site
+    end
+  end
+
+  after(:all) do
+    ENV['APP_TLD'] = nil
+    Locomotive.configure_for_test(true)
+  end
+
   def build_content(options = {})
     @content_type.contents.build({ :title => 'Locomotive', :description => 'Lorem ipsum....' }.merge(options))
   end
@@ -101,5 +161,4 @@ describe ContentInstance do
   def fake_bson_id(id)
     BSON::ObjectId(id.to_s.rjust(24, '0'))
   end
-
 end

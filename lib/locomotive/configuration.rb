@@ -7,7 +7,7 @@ module Locomotive
       :reserved_subdomains    => %w{www admin email blog webmail mail support help site sites},
       # :forbidden_paths      => %w{layouts snippets stylesheets javascripts assets admin system api},
       :reserved_slugs         => %w{stylesheets javascripts assets admin images api pages edit},
-      :locales                => %w{en de fr pt-BR it},
+      :locales                => %w{en de fr pt-BR it nl es ru},
       :cookie_key             => '_locomotive_session',
       :enable_logs            => false,
       :hosting                => :auto,
@@ -16,7 +16,14 @@ module Locomotive
       :mailer_sender          => 'support', #support@example.com'
       :manage_subdomain       => false,
       :manage_manage_domains  => false,
-      :lastest_items_nb       => 5
+      :lastest_items_nb       => 5,
+      :rack_cache             => {
+        :verbose     => true,
+        :metastore   => URI.encode("file:#{Rails.root}/tmp/dragonfly/cache/meta"), # URI encoded in case of spaces
+        :entitystore => URI.encode("file:#{Rails.root}/tmp/dragonfly/cache/body")
+      },
+      :devise_modules             => [:database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :encryptable, { :encryptor => :sha1 }],
+      :context_assign_extensions  => {  }
     }
 
     cattr_accessor :settings
@@ -45,7 +52,7 @@ module Locomotive
       self.manage_subdomain? && self.manage_domains?
     end
 
-    def reserved_domains
+    def reserved_subdomains
       if self.multi_sites?
         if self.multi_sites.reserved_subdomains.blank?
           @@defaults[:reserved_subdomains]

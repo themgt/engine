@@ -32,9 +32,12 @@ de:
       protected_page: "Du kannst keine Index oder 404 Seiten löschen"
       extname_changed: "Die neue Datei hat nicht die originale Dateiendung"
       array_too_short: "ist zu kurz (minimale Element-Zahl ist %{count})"
-      liquid_syntax: "Liquid Syntax-Fehler, bitte überprüfe die Syntax ('%{error}'/'%{fullpath}')"
-      liquid_extend: "Die Seite '%{fullpath}' verwendet eine Vorlage, die gar nicht existiert"
+      liquid_syntax: "Liquid Syntax-Fehler, bitte überprüfe die Syntax ('%{error}')"
       invalid_theme_file: "darf nicht leer sein oder ist keine zip-Datei"
+      page:
+        liquid_syntax: "Liquid Syntax-Fehler, bitte überprüfe die Syntax ('%{error}'/'%{fullpath}')"
+        liquid_extend: "Die Seite '%{fullpath}' verwendet eine Vorlage, die gar nicht existiert"
+
 
   attributes:
     defaults:
@@ -69,11 +72,7 @@ de:
         highlighted_field_name: Hervorgehobener Feld-Name
         group_by_field_name: Gruppierung nach Feld-Name
         api_enabled: API aktiviert
-      asset_collection:
-        name: Name
-        slug: Slug
       asset:
-        name: Name
         source: Quelle
       account:
         email: Email

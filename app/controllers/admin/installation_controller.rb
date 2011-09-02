@@ -5,7 +5,7 @@ module Admin
 
     skip_before_filter :require_site
 
-    skip_before_filter :authenticate_admin!
+    skip_before_filter :require_admin
 
     skip_before_filter :verify_authenticity_token
 
@@ -14,6 +14,8 @@ module Admin
     before_filter :is_step_already_done?
 
     before_filter :allow_installation?
+
+    skip_load_and_authorize_resource
 
     def show
       request.get? ? self.handle_get : self.handle_post
@@ -42,13 +44,7 @@ module Admin
         @site = Site.create_first_one(params[:site])
 
         if @site.valid?
-          begin
-            unless params[:zipfile].blank?
-              Locomotive::Import::Job.run!(params[:zipfile], @site, { :samples => true })
-            end
-          rescue Exception => e
-            logger.error "Import failed because of #{e.message}"
-          end
+          Site.install_template(@site, params)
 
           redirect_to last_url
         else
@@ -61,8 +57,8 @@ module Admin
     def is_step_already_done?
       case params[:step].to_i
       when 1 # already an account in db
-        if Account.count > 0
-          @step_done = t('admin.installation.step_1.done', Account.first.attributes)
+        if account = Account.first
+          @step_done = I18n.t('admin.installation.step_1.done', :name => account.name, :email => account.email)
           render 'step_1' and return false
         end
       else
