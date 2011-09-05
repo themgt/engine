@@ -44,7 +44,7 @@ module Locomotive
         
         logger.info "ROUTING FOR #{path.inspect}"
         
-        if page = current_site.pages.any_in(:fullpath => [*path]).first
+        if page = current_site.pages.any_in(:fullpath => [*path]).sort_by{ |p| p.fullpath.length }.first
           if not page.published? and current_admin.nil?
             page = nil
           else
