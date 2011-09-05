@@ -1,0 +1,39 @@
+- content_for :head do
+  = include_javascripts :edit_custom_fields, :image_picker, :assets
+  = include_stylesheets :fancybox
+
+= f.hidden_field :performing_plain_text
+
+#file-selector{ :class => "selector #{'hidden' if display_plain_text?(@asset)}" }
+  = f.inputs :name => :information do
+    = f.input :source, :hint_options => @asset.persisted? ? { :url => link_to(@asset.source_filename, @asset.source.url), :escaping => false } : {}
+
+  - if allow_plain_text_editing?(@asset)
+    %span.alt
+      != t('admin.theme_assets.form.choose_plain_text')
+
+- if allow_plain_text_editing?(@asset)
+  #text-selector{ :class => "selector #{'hidden' unless display_plain_text?(@asset)}", :style => "#{'display: none' unless display_plain_text?(@asset)}" }
+    = f.inputs :name => :code, :class => 'inputs code' do
+
+      - if @asset.new_record?
+        = f.input :plain_text_name
+
+        = f.custom_input :content_type do
+          = f.select :content_type, %w(stylesheet javascript)
+
+      = f.custom_input :plain_text, :css => 'full', :with_label => false do
+        %code{ :class => (@asset.size && @asset.size > 40000 ? 'nude' : (@asset.content_type || 'stylesheet')) }
+          = f.text_area :plain_text
+        .more
+          = link_to t('admin.image_picker.link'), admin_assets_path, :id => 'image-picker-link'
+      
+    %span.alt
+      != t('admin.theme_assets.form.choose_file')
+
+- if @asset.image? && @asset.valid?
+  = f.foldable_inputs :name => "#{t('formtastic.titles.preview')} #{image_dimensions_and_size(@asset)}", :class => 'preview' do
+    %li
+      .image
+        .inside
+          = image_tag(@asset.preview_url)

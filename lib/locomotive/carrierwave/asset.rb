@@ -29,7 +29,12 @@ module Locomotive
         end
 
         module InstanceMethods
-
+          # strip off the site id from the GridFS url. TODO... fix this in carrierwave somehow
+          def url
+            raw_url = super
+            "/" + raw_url.split("/")[2 .. -1].join("/")
+          end
+          
           def set_content_type(*args)
             value = :other
 
@@ -43,7 +48,9 @@ module Locomotive
                 end
               end
             end
-
+            
+            # TODO: instead use: https://github.com/jnicklas/carrierwave/blob/master/lib/carrierwave/processing/mime_types.rb
+            file.send(:instance_variable_set, :@content_type, File.mime_type?(original_filename))
             model.content_type = value
           end
 

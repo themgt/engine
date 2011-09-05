@@ -7,7 +7,6 @@ module Extensions
           if self.width < 80 && self.height < 80
             self.source.url
           else
-            self.source.url
             Locomotive::Dragonfly.resize_url(self.source, '80x80#')
           end
         end

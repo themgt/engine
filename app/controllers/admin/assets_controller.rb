@@ -7,8 +7,9 @@ module Admin
     
     before_filter :set_collections_and_current_collection
     before_filter :sanitize_params, :only => [:create, :update]
-    respond_to :json, :only => [:index, :create, :destroy, :update]
-
+    respond_to :json, :only => [:index, :create, :destroy, :update, :import]
+    skip_before_filter :verify_authenticity_token, :only => :import
+    
     def index
       index! do |response|
         response.json do
@@ -46,7 +47,7 @@ module Admin
       if asset.save
         render :json => {:success => true}
       else
-        #logger.error "[Asset upload error]: #{asset.errors.inspect} | #{params.inspect}"
+        Rails.logger.info "[Asset upload error]: #{asset.errors.inspect} | #{params.inspect}"
         render :json => {:success => false}
       end
     end

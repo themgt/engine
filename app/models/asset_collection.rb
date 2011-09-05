@@ -9,7 +9,8 @@ class AssetCollection
 
   ## associations ##
   referenced_in :site
-  embeds_many :assets, :validate => false
+  #embeds_many :assets, :validate => false
+  references_many :assets, :class_name => 'Asset', :validate => false
 
   ## behaviours ##
   liquid_methods :name, :ordered_assets

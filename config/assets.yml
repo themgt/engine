@@ -46,6 +46,8 @@ javascripts:
     - public/javascripts/admin/plugins/mustache.js
     - public/javascripts/admin/asset_collections.js
     - public/javascripts/admin/fileuploader.js
+  assets:
+    - public/javascripts/admin/assets.js
   contents:
     - public/javascripts/admin/plugins/tiny_mce/tinymce.js
     - public/javascripts/admin/contents.js
