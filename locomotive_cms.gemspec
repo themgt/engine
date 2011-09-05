@@ -58,7 +58,7 @@ Gem::Specification.new do |s|
   
   s.add_dependency "rdiscount"
   s.add_dependency "coderay"
-  s.add_dependency "grifizoid", '0.0.3'
+  s.add_dependency "grifizoid", '0.0.4'
   s.add_dependency 'compass', '0.11.3'
   s.add_dependency 'compass-960-plugin', '0.10.3'
   
