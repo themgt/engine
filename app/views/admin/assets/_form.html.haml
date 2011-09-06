@@ -3,6 +3,7 @@
   = include_stylesheets :fancybox
 
 = f.hidden_field :performing_plain_text
+= f.hidden_field :asset_collection_id
 
 #file-selector{ :class => "selector #{'hidden' if display_plain_text?(@asset)}" }
   = f.inputs :name => :information do
@@ -18,9 +19,6 @@
 
       - if @asset.new_record?
         = f.input :plain_text_name
-
-        = f.custom_input :content_type do
-          = f.select :content_type, %w(stylesheet javascript)
 
       = f.custom_input :plain_text, :css => 'full', :with_label => false do
         %code{ :class => (@asset.size && @asset.size > 40000 ? 'nude' : (@asset.content_type || 'stylesheet')) }

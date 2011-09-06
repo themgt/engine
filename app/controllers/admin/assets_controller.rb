@@ -23,19 +23,17 @@ module Admin
       edit!
     end
     
+    def new
+      resource.asset_collection = @asset_collection
+      new!
+    end
+    
     def create
-      @asset = current_site.assets.build(:name => params[:name], :source => params[:file])
-
-      create! do |success, failure|
-        success.json do
-          render :json => asset_to_json(@asset)
-        end
-        failure.json do
-          render :json => { :status => 'error' }
-        end
-      end
-    rescue Exception => e
-      render :json => { :status => 'error', :message => e.message }
+      create! { edit_admin_asset_collection_url(@asset_collection) }
+    end
+    
+    def update
+      update! { edit_admin_asset_collection_url(@asset_collection) }
     end
     
     # for drag & drop upload
