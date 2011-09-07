@@ -58,6 +58,7 @@ class Asset
   end
   
   def store_plain_text
+    return unless performing_plain_text?
     data = self.performing_plain_text? ? self.plain_text : self.source.read
 
     return if !self.stylesheet_or_javascript? || data.blank?
