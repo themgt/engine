@@ -17,15 +17,15 @@ module Locomotive
           else
             @context[:snippets] = [@slug]
           end
-
-          if @context[:site].present?
+          
+          if @context[:site].present? and @context[:disable_snippets] != true
             snippet = @context[:site].snippets.where(:slug => @slug).first
             self.refresh(snippet) if snippet
           end
         end
 
         def render(context)
-          return '' if @partial.nil?
+          return '' if @partial.nil? || context.registers[:disable_snippets] == true
 
           variable = context[@variable_name || @template_name[1..-2]]
 

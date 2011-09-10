@@ -1,7 +1,7 @@
 class Site
 
   include Locomotive::Mongoid::Document
-
+  
   ## Extensions ##
   extend Extensions::Site::SubdomainDomains
   extend Extensions::Site::FirstInstallation
@@ -18,6 +18,7 @@ class Site
   references_many :assets, :dependent => :destroy, :validate => false
   references_many :asset_collections, :dependent => :destroy, :validate => false
   references_many :content_types, :dependent => :destroy, :validate => false
+  references_many :searchable_pages, :dependent => :destroy, :validate => false
   embeds_many :memberships
 
   ## validations ##
@@ -47,7 +48,7 @@ class Site
   def to_liquid
     Locomotive::Liquid::Drops::Site.new(self)
   end
-
+  
   protected
 
   def create_default_pages!
