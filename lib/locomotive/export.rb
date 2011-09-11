@@ -313,7 +313,7 @@ module Locomotive
     end
 
     def replace_asset_urls_in(text)
-      base_url = AssetUploader.new(Asset.new(:site => @site)).store_dir
+      base_url = AssetUploader.new(Asset.new(:site => @site)).store_dir || ''
       (base_url = base_url.split('/')).pop
       base_url = base_url.join('/')
 

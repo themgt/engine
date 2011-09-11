@@ -3,7 +3,9 @@ class AssetUploader < CarrierWave::Uploader::Base
   include Locomotive::CarrierWave::Uploader::Asset
 
   def store_dir
-    File.join(model.asset_collection.site_id.to_s, model.asset_collection.slug)
+    if model.asset_collection.present?
+      File.join(model.asset_collection.site_id.to_s, model.asset_collection.slug)
+    end
   end
   
   def cache_dir
