@@ -22,13 +22,19 @@ module Locomotive
 
         def decode(attributes, context)
           attributes.each_pair do |key, value|
-            attributes[key] = (case value
+            context_value = (case value
             when /true|false/ then value == 'true'
             when /[0-9]+/ then value.to_i
             when /'(\S+)'/ then $1
             else
               context[value]
             end)
+            
+            if context_value.present?
+              attributes[key] = context_value
+            else
+              attributes.delete(key)
+            end
           end
         end
       end
