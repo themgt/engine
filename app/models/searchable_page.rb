@@ -53,19 +53,20 @@ class SearchablePage
       }
       
       locomotive_context = ::Liquid::Context.new({}, assigns.merge(extra_assigns), registers)
-      output    = page.render_text(locomotive_context)
       
-      if ci = extra_assigns['content_instance']
-        fullpath  = page.fullpath.sub('content_type_template', ci._slug)
-        title     = ci.highlighted_field_value
-      else
-        fullpath  = page.fullpath
-        title     = page.title
+      if output    = page.render_text(locomotive_context)
+        if ci = extra_assigns['content_instance']
+          fullpath  = page.fullpath.sub('content_type_template', ci._slug)
+          title     = ci.highlighted_field_value
+        else
+          fullpath  = page.fullpath
+          title     = page.title
+        end
+      
+        cached_page = site.searchable_pages.where(:fullpath => fullpath).first || site.searchable_pages.build(:fullpath => fullpath)
+        puts "updating search index for #{title} => #{site.domains.first}/#{fullpath}"
+        cached_page.update_attributes!(:title => title, :content => output.to_s)
       end
-      
-      cached_page = site.searchable_pages.where(:fullpath => fullpath).first || site.searchable_pages.build(:fullpath => fullpath)
-      puts "updating search index for #{title} => #{site.domains.first}/#{fullpath}"
-      cached_page.update_attributes!(:title => title, :content => output.to_s)
     end
   end
   

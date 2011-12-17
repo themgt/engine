@@ -24,6 +24,12 @@ module Locomotive
         def last
           self.collection.last
         end
+        
+        def map_contents(meth = 'categories')
+          Rails.logger.debug "got meth: #{meth}"
+          Rails.logger.debug "mapping to: " + (mapped_contents = self.collection.map{ |record| record.send(meth) }.flatten.uniq).inspect
+          mapped_contents
+        end
 
         def each(&block)
           self.collection.each(&block)
@@ -35,6 +41,10 @@ module Locomotive
 
         def size
           self.collection.size
+        end
+        
+        def _ids
+          self.collection.map(&:_id).uniq
         end
 
         alias :length :size
